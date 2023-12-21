@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  grafana
+  namespace: monitoring
+  labels:
+    app:  grafana-monitoring
+spec:
+  selector:
+    matchLabels:
+      app: grafana-monitoring
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  grafana-monitoring
+    spec:
+      containers:
+      - name:  grafana
+        image:  grafana/grafana:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+            - containerPort: 3000
+              name: http-grafana
+              protocol: TCP
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  prometheus
+  namespace: monitoring
+  labels:
+    app:  prometheus-monitoring
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-monitoring
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  prometheus-monitoring
+    spec:
+      containers:
+      - name:  prometheus
+        image:  bitnami/prometheus:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+            - containerPort: 9090
+              name: http-prometheus
+              protocol: TCP
+      restartPolicy: Always
